@@ -1,12 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/geziyor/geziyor"
+	"github.com/geziyor/geziyor/client"
 	tgBotApi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func main() {
+func parsing() {
+	geziyor.NewGeziyor(&geziyor.Options{
+		StartRequestsFunc: func(g *geziyor.Geziyor) {
+			g.GetRendered("https://стопкоронавирус.рф/information/", g.Opt.ParseFunc)
+		},
+		ParseFunc: func(g *geziyor.Geziyor, r *client.Response) {
+			fmt.Println(r.HTMLDoc.Find("small").Text())
+			// r.HTMLDoc.Find("div.cv-stats-virus__item" /*"h3.cv-stats-virus__item-value"*/).Each(func(i int, s *goquery.Selection) {
+			// 	text := strings.Trim(s.Find("H3").Text(), " \n")
+			// 	fmt.Println(i, text)
+			// })
+		},
+		//BrowserEndpoint: "ws://localhost:3000",
+	}).Start()
+}
+
+func bot() {
 	bot, err := tgBotApi.NewBotAPI("2096644322:AAH12TCiE78BXysiCpwvJHJ6MeBfyvHwxeo")
 	if err != nil {
 		log.Fatal(err)
@@ -32,6 +51,7 @@ func main() {
 		if update.Message == nil { // ignore any non-Message Updates
 			continue
 		}
+
 		//log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
 
 		command := update.Message.Command()
@@ -60,4 +80,9 @@ func main() {
 			}
 		}
 	}
+}
+
+func main() {
+	//bot()
+	parsing()
 }
