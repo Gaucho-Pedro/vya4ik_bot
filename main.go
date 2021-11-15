@@ -100,7 +100,7 @@ func bot() {
 				switch message {
 				case "Главное меню":
 					message2 := tgBotApi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-					message2.ReplyMarkup = tgBotApi.NewInlineKeyboardMarkup(tgBotApi.NewInlineKeyboardRow(tgBotApi.NewInlineKeyboardButtonData("Корона", "/covid")))
+					message2.ReplyMarkup = tgBotApi.NewInlineKeyboardMarkup(tgBotApi.NewInlineKeyboardRow(tgBotApi.NewInlineKeyboardButtonData("Корона", "covid")))
 					bot.Send(message2)
 				}
 			} else {
