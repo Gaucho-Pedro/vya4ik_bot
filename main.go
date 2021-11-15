@@ -110,21 +110,6 @@ func bot() {
 					message1 := tgBotApi.NewMessage(update.Message.Chat.ID, "Привет, я Vya4ikBot!")
 					message1.ReplyMarkup = tgBotApi.NewReplyKeyboard(tgBotApi.NewKeyboardButtonRow(tgBotApi.NewKeyboardButton("Главное меню")))
 					bot.Send(message1)
-				case "covid":
-					bot.Send(tgBotApi.NewMessage(update.Message.Chat.ID, "Делаю запрос..."))
-					model := parsing()
-					text := fmt.Sprintf("*%s:*\n\n"+
-						"*Выявлено случаев: *%s\n"+
-						"*Человек выздоровело: *%s\n"+
-						"*Человек умерло: *%s\n\n"+
-						"*Выявлено случаев за сутки: *%s\n"+
-						"*Человек выздоровело за сутки: *%s\n"+
-						"*Человек умерло за сутки: *%s\n\n"+
-						"[Источник](https://стопкоронавирус.рф)",
-						model.date, model.sick, model.healed, model.died, model.sickChange, model.healedChange, model.diedChange)
-					msg := tgBotApi.NewMessage(update.Message.Chat.ID, text)
-					msg.ParseMode = "markdown"
-					bot.Send(msg)
 				default:
 					bot.Send(tgBotApi.NewMessage(update.Message.Chat.ID, "К сожалению, я не знаю такую команду"))
 				}
