@@ -60,7 +60,7 @@ func bot() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	bot.Debug = true
+	//bot.Debug = true
 	log.Printf("Authorized on account %s", bot.Self.UserName)
 
 	u := tgBotApi.NewUpdate(0)
