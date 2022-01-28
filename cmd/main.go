@@ -1,14 +1,15 @@
 package main
 
 import (
+	"firstBot/internal/config"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/geziyor/geziyor"
 	"github.com/geziyor/geziyor/client"
 	tgBotApi "github.com/go-telegram-bot-api/telegram-bot-api"
+	log "github.com/sirupsen/logrus"
 )
 
 type Model struct {
@@ -119,5 +120,15 @@ func bot() {
 }
 
 func main() {
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	})
+
+	config := config.GetConfig()
+
+	level, _ := log.ParseLevel(config.LogLevel)
+	log.SetLevel(level)
+
 	bot()
 }

@@ -2,10 +2,15 @@ module firstBot
 
 go 1.17
 
-require github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+require (
+	github.com/PuerkitoBio/goquery v1.8.0
+	github.com/geziyor/geziyor v0.0.0-20211021191925-369b42cbc6c5
+	github.com/go-delve/delve v1.8.0
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+	github.com/sirupsen/logrus v1.8.1
+)
 
 require (
-	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/VividCortex/gohistogram v1.0.0 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -13,7 +18,6 @@ require (
 	github.com/chromedp/cdproto v0.0.0-20211107215322-d3760c2dc57b // indirect
 	github.com/chromedp/chromedp v0.7.4 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
-	github.com/geziyor/geziyor v0.0.0-20211021191925-369b42cbc6c5 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
@@ -29,8 +33,9 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
 	golang.org/x/net v0.0.0-20211109214657-ef0fda0de508 // indirect
-	golang.org/x/sys v0.0.0-20211110154304-99a53858aa08 // indirect
+	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
