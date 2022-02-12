@@ -11,6 +11,7 @@ import (
 type Config struct {
 	LogLevel string
 	BotToken string
+	Cron     string
 }
 
 var config Config

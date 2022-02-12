@@ -1,123 +1,15 @@
 package main
 
 import (
-	"firstBot/internal/config"
-	"fmt"
-	"strings"
+	"time"
+	"vya4ikBot/internal/config"
+	"vya4ikBot/internal/data"
+	"vya4ikBot/internal/handlers"
 
-	"github.com/PuerkitoBio/goquery"
-	"github.com/geziyor/geziyor"
-	"github.com/geziyor/geziyor/client"
+	"github.com/go-co-op/gocron"
 	tgBotApi "github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 )
-
-type Model struct {
-	date string
-
-	sick       string
-	sickChange string
-
-	healed       string
-	healedChange string
-
-	died       string
-	diedChange string
-}
-
-func parsing() Model {
-	var model Model
-	geziyor.NewGeziyor(&geziyor.Options{
-		StartRequestsFunc: func(g *geziyor.Geziyor) {
-			g.GetRendered("https://стопкоронавирус.рф/information/", g.Opt.ParseFunc)
-		},
-		ParseFunc: func(g *geziyor.Geziyor, r *client.Response) {
-			model.date = strings.ToLower(r.HTMLDoc.Find("div.cv-section__title-wrapper").Find("small").Last().Text())
-
-			r.HTMLDoc.Find("div.cv-stats-virus__item").Each(func(i int, s *goquery.Selection) {
-				switch i {
-				case 0:
-					model.sick = strings.Trim(s.Find("H3").Text(), " \n")
-				case 1:
-					model.sickChange = strings.Trim(s.Find("H3").Text(), " \n")
-				case 2:
-					model.healed = strings.Trim(s.Find("H3").Text(), " \n")
-				case 3:
-					model.healedChange = strings.Trim(s.Find("H3").Text(), " \n")
-				case 4:
-					model.died = strings.Trim(s.Find("H3").Text(), " \n")
-				case 5:
-					model.diedChange = strings.Trim(s.Find("H3").Text(), " \n")
-				}
-			})
-		},
-		//BrowserEndpoint: "ws://localhost:3000",
-	}).Start()
-	return model
-}
-
-func bot() {
-	bot, err := tgBotApi.NewBotAPI("2096644322:AAH12TCiE78BXysiCpwvJHJ6MeBfyvHwxeo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	//bot.Debug = true
-	log.Printf("Authorized on account %s", bot.Self.UserName)
-
-	u := tgBotApi.NewUpdate(0)
-	u.Timeout = 60
-
-	updates, err := bot.GetUpdatesChan(u)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	for update := range updates {
-
-		if update.CallbackQuery != nil {
-			log.Printf("[%s] %s", update.CallbackQuery.From.UserName, update.CallbackQuery.Data)
-			bot.Send(tgBotApi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Делаю запрос..."))
-			model := parsing()
-			text := fmt.Sprintf("*В России %s:*\n\n"+
-				"*Выявлено случаев: *%s\n"+
-				"*Человек выздоровело: *%s\n"+
-				"*Человек умерло: *%s\n\n"+
-				"*Выявлено случаев за сутки: *%s\n"+
-				"*Человек выздоровело за сутки: *%s\n"+
-				"*Человек умерло за сутки: *%s\n\n"+
-				"[Источник](https://стопкоронавирус.рф)",
-				model.date, model.sick, model.healed, model.died, model.sickChange, model.healedChange, model.diedChange)
-			msg := tgBotApi.NewMessage(update.CallbackQuery.Message.Chat.ID, text)
-			msg.ParseMode = "markdown"
-			bot.Send(msg)
-		}
-
-		if update.Message != nil {
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-			command := update.Message.Command()
-			message := update.Message.Text
-
-			if command == "" {
-				switch message {
-				case "Главное меню":
-					message2 := tgBotApi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-					message2.ReplyMarkup = tgBotApi.NewInlineKeyboardMarkup(tgBotApi.NewInlineKeyboardRow(tgBotApi.NewInlineKeyboardButtonData("Корона", "covid")))
-					bot.Send(message2)
-				}
-			} else {
-				switch command {
-				case "start":
-					/*TODO: Вынести клаву в отдельный класс*/
-					message1 := tgBotApi.NewMessage(update.Message.Chat.ID, "Привет, я Vya4ikBot!")
-					message1.ReplyMarkup = tgBotApi.NewReplyKeyboard(tgBotApi.NewKeyboardButtonRow(tgBotApi.NewKeyboardButton("Главное меню")))
-					bot.Send(message1)
-				default:
-					bot.Send(tgBotApi.NewMessage(update.Message.Chat.ID, "К сожалению, я не знаю такую команду"))
-				}
-			}
-		}
-	}
-}
 
 func main() {
 	log.SetFormatter(&log.TextFormatter{
@@ -130,5 +22,34 @@ func main() {
 	level, _ := log.ParseLevel(config.LogLevel)
 	log.SetLevel(level)
 
-	bot()
+	data := data.NewCovidData()
+	data.GetData()
+
+	scheduler := gocron.NewScheduler(time.Local)
+	scheduler.Cron(config.Cron).Do(data.GetData)
+	scheduler.StartAsync()
+
+	bot, err := tgBotApi.NewBotAPI(config.BotToken)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bot.Debug = log.GetLevel().String() == "debug"
+
+	log.Infof("Authorized on account %s", bot.Self.UserName)
+
+	u := tgBotApi.NewUpdate(0)
+	u.Timeout = 60
+
+	updates, err := bot.GetUpdatesChan(u)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	for update := range updates {
+		if update.CallbackQuery != nil {
+			go handlers.CallbackHandler(update.CallbackQuery, bot, data)
+		} else if update.Message != nil {
+			go handlers.MessageHandler(update.Message, bot)
+		}
+	}
 }
