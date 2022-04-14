@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	LogLevel string
+	BotDebug bool
 	BotToken string
 	Cron     string
 }

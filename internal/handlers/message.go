@@ -13,7 +13,7 @@ func MessageHandler(message *tgBotApi.Message, bot *tgBotApi.BotAPI) {
 		switch message.Text {
 		case "Главное меню":
 			msg := tgBotApi.NewMessage(message.Chat.ID, message.Text)
-			msg.ReplyMarkup = buttons.InlineKeyboard()
+			msg.ReplyMarkup = buttons.FeaturesKeyboard()
 			bot.Send(msg)
 		default:
 			bot.Send(tgBotApi.NewMessage(message.Chat.ID, "Простите, я вас не понимаю"))
@@ -21,9 +21,9 @@ func MessageHandler(message *tgBotApi.Message, bot *tgBotApi.BotAPI) {
 	} else {
 		switch message.Command() {
 		case "start":
-			msg := tgBotApi.NewMessage(message.Chat.ID, "Привет, я Vya4ikBot! На данный момент я предоставляю оперативную информацию по Covid-19 в России\n"+"[Источник](https://стопкоронавирус.рф)")
+			msg := tgBotApi.NewMessage(message.Chat.ID, "Привет, я "+bot.Self.FirstName+"! На данный момент я предоставляю оперативную информацию по Covid-19 в России\n"+"[Источник](https://стопкоронавирус.рф)")
 			msg.ParseMode = "markdown"
-			msg.ReplyMarkup = buttons.MainMenu()
+			msg.ReplyMarkup = buttons.MainMenuButton()
 			bot.Send(msg)
 		default:
 			bot.Send(tgBotApi.NewMessage(message.Chat.ID, "К сожалению, я не знаю такую команду"))

@@ -1,11 +1,12 @@
 package data
 
 import (
+	"encoding/json"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
+	"regexp"
 	"strings"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/geziyor/geziyor"
-	"github.com/geziyor/geziyor/client"
 )
 
 type CovidData struct {
@@ -25,32 +26,22 @@ func NewCovidData() *CovidData {
 
 func (c *CovidData) GetData() {
 
-	geziyor.NewGeziyor(&geziyor.Options{
-		StartRequestsFunc: func(g *geziyor.Geziyor) {
-			g.GetRendered("https://стопкоронавирус.рф/information/", g.Opt.ParseFunc)
-		},
-		ParseFunc: func(g *geziyor.Geziyor, r *client.Response) {
-			c.Date = r.HTMLDoc.Find("div.cv-section__title-wrapper").Find("small").Last().Text()
+	response, err := http.Get("https://стопкоронавирус.рф/information/")
+	if err != nil {
+		log.Panic(err)
+	}
+	defer response.Body.Close()
 
-			r.HTMLDoc.Find("div.cv-stats-virus__item").Each(func(i int, s *goquery.Selection) {
-				switch i {
-				case 0:
-					c.Hospitalized = strings.Trim(s.Find("H3").Text(), " \n")
-				case 1:
-					c.HealedChange = strings.Trim(s.Find("H3").Text(), " \n")
-				case 2:
-					c.Healed = strings.Trim(s.Find("H3").Text(), " \n")
-				case 3:
-					c.SickChange = strings.Trim(s.Find("H3").Text(), " \n")
-				case 4:
-					c.Sick = strings.Trim(s.Find("H3").Text(), " \n")
-				case 5:
-					c.DiedChange = strings.Trim(s.Find("H3").Text(), " \n")
-				case 6:
-					c.Died = strings.Trim(s.Find("H3").Text(), " \n")
-				}
-			})
-		},
-		//BrowserEndpoint: "ws://localhost:3000",
-	}).Start()
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Panic("Error reading HTTP body: ", err)
+	}
+	log.Info("Start parsing...")
+	c.Date = strings.Trim(regexp.MustCompile(">П(.)*?\\d</s").FindString(string(body)), "></s")
+
+	res := strings.NewReplacer("+", "", "'", "", "=", "").Replace(regexp.MustCompile("='(.)*?'").FindString(string(body)))
+	if err := json.Unmarshal([]byte(res), c); err != nil {
+		log.Panic(err)
+	}
+	log.Info("Parsing successful!")
 }
