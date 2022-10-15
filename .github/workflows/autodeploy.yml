@@ -30,14 +30,14 @@ jobs:
       - name: Starting Bot
         uses: appleboy/ssh-action@master
         env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          TOKEN: ${{ secrets.BOT_TOKEN }}
         with:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
 #          script_stop: true
-          envs: BOT_TOKEN
+          envs: TOKEN
           script: |
-            cd /home/vpn/bot
+            export BOT_TOKEN=$TOKEN
             echo "$BOT_TOKEN">>token
             nohup /home/vpn/bot/vya4ik_bot &
