@@ -7,8 +7,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"time"
 	"vya4ikBot/internal/config"
-	"vya4ikBot/internal/data"
 	"vya4ikBot/internal/handlers"
+	"vya4ikBot/internal/model"
 )
 
 func main() {
@@ -25,7 +25,7 @@ func main() {
 	}
 	log.SetLevel(level)
 
-	data := data.NewCovidData()
+	data := model.NewCovidData()
 	data.GetData()
 	location, err := time.LoadLocation("Europe/Moscow")
 	if err != nil {
