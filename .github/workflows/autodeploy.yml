@@ -27,3 +27,16 @@ jobs:
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
           source: vya4ik_bot
           target: /home/vpn/bot
+      - name: Starting Bot
+        uses: appleboy/ssh-action@master
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        with:
+          host: ${{ secrets.DEPLOY_SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
+          key: ${{ secrets.DEPLOY_SERVER_KEY }}
+          envs: BOT_TOKEN
+          script: |
+            pkill vya4ik_bot
+            sleep 2
+            nohup /home/vpn/bot/vya4ik_bot &
