@@ -1,34 +1,29 @@
 package config
 
 import (
-	"encoding/json"
-	"os"
+	"github.com/ilyakaznacheev/cleanenv"
 	"sync"
 
 	log "github.com/sirupsen/logrus"
 )
 
 type Config struct {
-	LogLevel string
-	BotDebug bool
-	BotToken string
-	Cron     string
+	LogLevel string `env:"LOG_LEVEL" env-default:"INFO"`
+	BotDebug bool   `env:"BOT_DEBUG" env-default:"false"`
+	BotToken string `env:"BOT_TOKEN" env-required:"true"`
+	Cron     string `env:"CRON" env-default:"*/1 11-12 * * *"`
 }
 
-var config Config
+var instance *Config
 var once sync.Once
 
 func GetConfig() *Config {
 	once.Do(func() {
-		file, err := os.Open("configs/conf.json")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-		decoder := json.NewDecoder(file)
-		if err = decoder.Decode(&config); err != nil {
+		instance = &Config{}
+		log.Debug("Reading configuration...")
+		if err := cleanenv.ReadEnv(instance); err != nil {
 			log.Fatal(err)
 		}
 	})
-	return &config
+	return instance
 }

@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"vya4ikBot/internal/buttons"
-	"vya4ikBot/internal/data"
+	"vya4ikBot/internal/model"
 
 	tgBotApi "github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
@@ -14,7 +14,7 @@ var format = "%s:\n\n" +
 	"Выздоровело: *%s*\n" +
 	"Умерло: *%s*\n\n"
 
-func CallbackHandler(callbackQuery *tgBotApi.CallbackQuery, bot *tgBotApi.BotAPI, data *data.CovidData) {
+func CallbackHandler(callbackQuery *tgBotApi.CallbackQuery, bot *tgBotApi.BotAPI, data *model.CovidData) {
 	log.Debugf("[%s] %s", callbackQuery.From.UserName, callbackQuery.Data)
 
 	msg := tgBotApi.NewMessage(callbackQuery.Message.Chat.ID, "")
