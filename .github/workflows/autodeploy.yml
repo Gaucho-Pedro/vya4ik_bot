@@ -38,6 +38,6 @@ jobs:
 #          script_stop: true
           envs: TOKEN
           script: |
+            cd /home/vpn/bot
             export BOT_TOKEN=$TOKEN
-            nohup /home/vpn/bot/vya4ik_bot &
-            exit
+            ./vya4ik_bot&

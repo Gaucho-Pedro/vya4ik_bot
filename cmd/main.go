@@ -5,6 +5,7 @@ import (
 	"github.com/go-co-op/gocron"
 	tgBotApi "github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"time"
 	"vya4ikBot/internal/config"
 	"vya4ikBot/internal/handlers"
@@ -17,6 +18,13 @@ func main() {
 		TimestampFormat: "2006-01-02 15:04:05.000",
 	})
 
+	f, err := os.OpenFile("bot.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+
+	log.SetOutput(f)
 	config := config.GetConfig()
 
 	level, err := log.ParseLevel(config.LogLevel)
