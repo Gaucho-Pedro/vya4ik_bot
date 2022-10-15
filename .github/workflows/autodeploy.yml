@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.DEPLOY_SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
-          script_stop: true
+#          script_stop: true
           envs: BOT_TOKEN
           script: |
             echo $BOT_TOKEN
