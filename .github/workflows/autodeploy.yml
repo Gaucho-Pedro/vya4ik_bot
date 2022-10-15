@@ -40,4 +40,4 @@ jobs:
           script: |
             cd /home/vpn/bot
             export BOT_TOKEN=$TOKEN
-            ./vya4ik_bot&
+            ./start.sh
