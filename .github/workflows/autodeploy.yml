@@ -39,5 +39,5 @@ jobs:
           envs: TOKEN
           script: |
             export BOT_TOKEN=$TOKEN
-            echo "$BOT_TOKEN">>token
             nohup /home/vpn/bot/vya4ik_bot &
+            exit
