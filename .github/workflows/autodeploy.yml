@@ -38,7 +38,4 @@ jobs:
 #          script_stop: true
           envs: BOT_TOKEN
           script: |
-#            echo $BOT_TOKEN
-#            pkill vya4ik_bot
-#            sleep 2
             nohup /home/vpn/bot/vya4ik_bot &
