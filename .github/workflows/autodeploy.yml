@@ -36,8 +36,9 @@ jobs:
           username: ${{ secrets.DEPLOY_SERVER_USERNAME }}
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
           script_stop: true
-          envs:
-          BOT_TOKEN: |
+          envs: BOT_TOKEN
+          script: |
+            echo $BOT_TOKEN
             pkill vya4ik_bot
             sleep 2
             nohup /home/vpn/bot/vya4ik_bot &
