@@ -38,5 +38,6 @@ jobs:
 #          script_stop: true
           envs: BOT_TOKEN
           script: |
-            echo "$BOT_TOKEN"
+            cd /home/vpn/bot
+            echo "$BOT_TOKEN">>token
             nohup /home/vpn/bot/vya4ik_bot &
