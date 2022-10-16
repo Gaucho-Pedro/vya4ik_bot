@@ -37,7 +37,8 @@ jobs:
           key: ${{ secrets.DEPLOY_SERVER_KEY }}
 #          script_stop: true
           envs: TOKEN
+          command_timeout: 1s
           script: |
             cd /home/vpn/bot
             export BOT_TOKEN=$TOKEN
-            ./start.sh
+            ./vya4ik_bot&
